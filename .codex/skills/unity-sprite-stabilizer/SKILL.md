@@ -20,6 +20,7 @@ Use this skill after generating or replacing Unity 2D character sprites, especia
 - For locomotion, keep four distinct silhouettes. If frames hash differently but look identical, regenerate or choose clearer source poses, then scale the whole pose consistently.
 - If the user asks for a no-bob run cycle, stabilize the head/torso top line for run frames instead of the feet line. In this project the hero run top line is `top=83`; feet may vary naturally while the body stays level.
 - Clear solid magenta and low-alpha magenta edges before final QC. Resizing can reintroduce nearly transparent purple pixels.
+- Do not globally remove near-white pixels when cleaning magenta backgrounds; flood-fill only edge-connected white grid/background pixels, or white shirts/highlights will turn gray/disappear.
 
 ## AIGAME_DEMO Fix Pattern
 
