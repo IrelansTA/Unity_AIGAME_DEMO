@@ -19,6 +19,34 @@
 - Verify victory only appears after the final wave is cleared.
 - Verify attacks only hit when actors are within the same lane tolerance.
 
+## Next Priority: Hammer General Boss
+
+Status: deferred until real image generation is available. Do not ship this Boss using the ordinary enemy appearance or code-drawn placeholder art.
+
+- Generate Hammer General Boss sprite art:
+  - Use `$imagegen` / `generate2dsprite` once the built-in `image_gen` tool or a valid CLI fallback API key is available.
+  - Target a pixel-art side-view hammer general sprite sheet under `Assets/Resources/Boss/HammerGeneral`.
+  - Desired delivery is 24 frames, 4 columns x 6 rows: idle, walk, slam, charge, throw, hurt/death.
+  - Normalize to `256x256`, PPU `64`, point filter, stable feet line, and about `1.35x` normal enemy size.
+- Add Boss phase to the existing wave flow:
+  - After the 3 small enemy waves are cleared, wait about `1.8s`, show `WARNING` / `BOSS`, then spawn `Boss_HammerGeneral`.
+  - Clone the runtime enemy template for the Boss and replace sprites, AI, stats, hurtbox, and combat controller at runtime.
+  - Move victory from "small waves cleared" to "Boss dead".
+- Implement Boss gameplay:
+  - Add `BossCombatController` with about `260` HP, `2.4` move speed, short hurt stun, and readable attack selection.
+  - Skill 1: charged hammer slam, `0.85s` windup, lane-aware heavy hit around `18` damage, strong shake.
+  - Skill 2: charge rush, `0.65s` red lane warning, straight-line dash, about `14` damage.
+  - Skill 3: boomerang hammer via `BossHammerProjectile`, `0.45s` windup, travels about `3.2` units and returns, about `12` damage.
+- Reuse existing feedback systems:
+  - Broadcast hits through `CombatEvents`.
+  - Reuse `ImpactFeedbackController`, floating damage, hitstop, camera shake, and screen flash.
+  - Bind the current enemy HUD to Boss health and show `BOSS HP current/max`.
+- Boss acceptance checks:
+  - Unity compile has no new `Error`, `Exception`, or `Assert`.
+  - Clearing waves 1-3 spawns the Boss and does not trigger early victory.
+  - All three Boss skills can happen and respect lane checks.
+  - Boss death triggers `VICTORY` without breaking existing death/feedback flow.
+
 ## Next Gameplay Work
 
 - Replace frozen idle frames with stable generated idle loops if animation polish is needed.
