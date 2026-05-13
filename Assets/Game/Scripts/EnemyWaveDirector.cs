@@ -349,9 +349,9 @@ public sealed class EnemyWaveDirector : MonoBehaviour
 
         if (actor.TryGetComponent(out ActorGroundShadow shadow))
         {
-            shadow.size = new Vector2(1.55f, 0.36f);
+            shadow.size = new Vector2(1.8f, 0.42f);
             shadow.offset = new Vector2(0f, 0.03f);
-            shadow.color = new Color(0f, 0f, 0f, 0.6f);
+            shadow.color = new Color(0f, 0f, 0f, 0.72f);
         }
 
         if (actor.TryGetComponent(out EnemyCombatController enemyController))

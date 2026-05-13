@@ -2,6 +2,11 @@
 
 ## Completed Recently
 
+- Hero skill FX first pass:
+  - Replaced the first-pass chi burst with a 6-frame hand-aligned flame release under `Assets/Resources/Hero/SkillFireBurst`.
+  - `PlayerSkillEffectPlayer` now delays the FX slightly, anchors it to the skill hand offset, and uses custom sprite pivots so the flame nozzle stays on the hand.
+  - `PlayerCombatController.StartSkill()` plays the sequence when `L` skill fires.
+  - QC pass confirmed no edge-touch frames and isolated Unity screenshot showed the flame aligned to the hero hand.
 - Hammer General Boss first pass:
   - Generated real pixel-art Boss frames under `Assets/Resources/Boss/HammerGeneral`.
   - Added `BossCombatController`, `BossHammerProjectile`, and `HammerGeneralAssets`.
@@ -10,12 +15,17 @@
   - Lowered the boomerang hammer projectile spawn height from `0.50` to `0.34` so it leaves closer to the Boss hand instead of floating high.
   - Reprocessed Boss and projectile sprites from the raw magenta sheets with stronger despill/edge cleanup.
   - Throw frames 19/20 now reuse the empty-hand release pose so the Boss does not visibly hold a hammer while the projectile is out.
+  - Boss ground-slam particle systems now assign an explicit URP particle material instead of relying on the renderer default shader.
 - Runtime presentation/GM first pass:
-  - Every `CombatActor` now gets a small semi-transparent oval ground shadow at runtime.
+  - Every `CombatActor` now gets a darker, wider semi-transparent oval ground shadow at runtime.
   - Added Tab-toggled Chinese IMGUI GM display through `GmToolController`; it does not create Canvas UI controls.
   - GM settings serialize to `Application.persistentDataPath/gm-tool-settings.json`.
   - First GM option: player invincibility.
   - Added GM playtest buttons for restore player HP, defeat current enemy, and jump directly to the Hammer General Boss.
+- Enemy/Boss hit flash first pass:
+  - Enemy-team `CombatActor` instances automatically add `ActorHitFlash`.
+  - `ActorHitFlash` listens to `CombatActor.Damaged` and renders a short white silhouette overlay with `AIGame/SpriteWhiteFlash`.
+  - The shader samples the active sprite texture alpha through a material property block, so the flash follows the current enemy/Boss frame.
 - Combat HUD and impact feedback first pass:
   - Runtime player/enemy health bars, delayed damage bars, combo text, Dash/Skill cooldown widgets.
   - Combat hit event channel, hit sparks, floating damage, hitstop, screen flash, and camera shake.
@@ -39,6 +49,10 @@
 - Boss hammer height validation:
   - Isolated screenshot of `BossProjectileHeightPreview` confirmed the hammer now aligns near the throw hand.
   - Post-fix probe loaded Boss/projectile sprites and confirmed `projectileLocalY=0.34`.
+- Hero skill FX / Boss shader validation:
+  - `SkillFireBurst` imports are Sprite, PPU `64`, point-filtered, uncompressed, custom pivot `(0.21875, 0.5)`.
+  - Probe loaded 6/6 FX frames, spawned the runtime skill effect, and resolved Boss slam particles to `Universal Render Pipeline/Particles/Unlit`.
+  - Isolated screenshot of `CodexFxVerificationPreview` confirmed hand-aligned flame, darker/wider shadow, and alpha-shaped enemy white flash.
 - Still needs hands-on Play Mode pass in `CombatPrototype`:
   - Verify wave 1 starts with the scene enemy and waves 2/3 spawn after all active enemies die.
   - Verify `WARNING` / `BOSS` timing feels good.
@@ -71,6 +85,7 @@ Status: first pass implemented with generated art. Next work is tuning, animatio
 - Split attack body animation and hit/impact FX into separate sprite layers.
 - Add enemy hurt stun timing polish beyond the current first-pass timings.
 - Add wave entry tells/spawn flash and clearer arena pacing.
+- Tune hero skill flame delay/offset after a hands-on Play Mode pass if the impact feels too early, too far forward, or too small.
 - Add controller rebinding later; keep legacy Input Manager for now.
 
 ## Technical Debt

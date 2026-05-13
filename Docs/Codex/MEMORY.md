@@ -38,4 +38,13 @@
   - First GM option is player invincibility via `CombatActor.invincible`.
   - GM now also has playtest buttons: restore player HP, defeat current enemy, and directly summon the Hammer General Boss.
   - `EnemyWaveDirector.DebugSkipToBoss()` destroys active small enemies, keeps the runtime template, sets the wave to the final wave, and spawns `Boss_HammerGeneral` immediately.
-- `CombatActor` automatically adds `ActorGroundShadow`, so hero, enemies, and runtime clones all get small oval foot shadows without scene YAML edits.
+- Hero skill FX:
+  - Generated fire frames live under `Assets/Resources/Hero/SkillFireBurst`.
+  - `PlayerSkillEffectPlayer` loads `Hero/SkillFireBurst/skill-fire-burst-1..6` from Resources and plays them through a temporary SpriteRenderer when the player presses `L`.
+  - Fire frame imports use custom pivot `(0.21875, 0.5)` so the sprite transform can sit directly on the hand/nozzle.
+  - Current runtime settings: release delay `0.1`, hand offset `(0.6, 0.02)`, scale `(1.05, 0.9)`, facing-aware flip, and actor sorting order +5.
+- Boss ground-slam shader note:
+  - `BossCombatController` assigns an explicit particle material to slam charge/smoke particles.
+  - The validated shader fallback path currently resolves to `Universal Render Pipeline/Particles/Unlit`.
+- `CombatActor` automatically adds `ActorGroundShadow`, so hero, enemies, and runtime clones all get darker/wider oval foot shadows without scene YAML edits.
+- Enemy-team `CombatActor` automatically adds `ActorHitFlash`; on `Damaged`, it overlays the current sprite with `AIGame/SpriteWhiteFlash` for a short white silhouette flash. The shader needs `_MainTex` set through a material property block to avoid rendering the full white quad.

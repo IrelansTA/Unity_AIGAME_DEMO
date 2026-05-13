@@ -47,6 +47,7 @@ public sealed class CombatActor : MonoBehaviour
         }
 
         EnsureGroundShadow();
+        EnsureHitFlash();
     }
 
     private void Update()
@@ -209,5 +210,15 @@ public sealed class CombatActor : MonoBehaviour
         {
             gameObject.AddComponent<ActorGroundShadow>();
         }
+    }
+
+    private void EnsureHitFlash()
+    {
+        if (team != CombatTeam.Enemy || GetComponent<ActorHitFlash>() != null)
+        {
+            return;
+        }
+
+        gameObject.AddComponent<ActorHitFlash>();
     }
 }

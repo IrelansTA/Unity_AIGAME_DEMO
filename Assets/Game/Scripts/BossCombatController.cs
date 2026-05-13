@@ -22,6 +22,7 @@ public sealed class BossCombatController : MonoBehaviour
     private static Sprite warningSprite;
     private static Sprite warningOvalSprite;
     private static Sprite crackSprite;
+    private static Material particleMaterial;
     private bool acting;
     private float cooldownTimer;
     private int nextSkillIndex;
@@ -295,6 +296,7 @@ public sealed class BossCombatController : MonoBehaviour
         color.color = gradient;
 
         SetParticleSorting(ps, 736);
+        SetParticleMaterial(ps);
         Destroy(effectObject, duration + 0.6f);
     }
 
@@ -346,6 +348,7 @@ public sealed class BossCombatController : MonoBehaviour
         velocity.z = new ParticleSystem.MinMaxCurve(0f, 0f);
 
         SetParticleSorting(ps, 737);
+        SetParticleMaterial(ps);
         Destroy(smokeObject, 1.5f);
     }
 
@@ -371,6 +374,43 @@ public sealed class BossCombatController : MonoBehaviour
         {
             renderer.sortingOrder = sortingOrder;
         }
+    }
+
+    private static void SetParticleMaterial(ParticleSystem ps)
+    {
+        ParticleSystemRenderer renderer = ps == null ? null : ps.GetComponent<ParticleSystemRenderer>();
+        Material material = GetParticleMaterial();
+        if (renderer != null && material != null)
+        {
+            renderer.material = material;
+        }
+    }
+
+    private static Material GetParticleMaterial()
+    {
+        if (particleMaterial != null)
+        {
+            return particleMaterial;
+        }
+
+        Shader shader = Shader.Find("Universal Render Pipeline/Particles/Unlit");
+        if (shader == null)
+        {
+            shader = Shader.Find("Particles/Standard Unlit");
+        }
+
+        if (shader == null)
+        {
+            shader = Shader.Find("Sprites/Default");
+        }
+
+        if (shader == null)
+        {
+            return null;
+        }
+
+        particleMaterial = new Material(shader);
+        return particleMaterial;
     }
 
     private static Sprite GetWarningSprite()

@@ -5,6 +5,7 @@ public sealed class PlayerCombatController : MonoBehaviour
     public CombatActor actor;
     public CombatHitbox hitbox;
     public ActorVisualAnimator visual;
+    public PlayerSkillEffectPlayer skillEffect;
 
     public KeyCode attackKey = KeyCode.J;
     public KeyCode dashKey = KeyCode.K;
@@ -46,6 +47,16 @@ public sealed class PlayerCombatController : MonoBehaviour
         if (visual == null)
         {
             visual = GetComponent<ActorVisualAnimator>();
+        }
+
+        if (skillEffect == null)
+        {
+            skillEffect = GetComponent<PlayerSkillEffectPlayer>();
+        }
+
+        if (skillEffect == null)
+        {
+            skillEffect = gameObject.AddComponent<PlayerSkillEffectPlayer>();
         }
     }
 
@@ -171,5 +182,6 @@ public sealed class PlayerCombatController : MonoBehaviour
         actionLockTimer = 0.58f;
         hitbox.Activate(30, new Vector2(1.2f, 0.55f), new Vector2(2.25f, 1.25f), 0.28f, 0.42f, new Vector2(1.65f, 0f), 0.16f, 0.18f);
         visual?.PlaySkill();
+        skillEffect?.Play();
     }
 }

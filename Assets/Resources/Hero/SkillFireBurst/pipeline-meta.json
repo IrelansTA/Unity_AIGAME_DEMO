@@ -1,0 +1,323 @@
+{
+  "target": "asset",
+  "mode": "fx",
+  "prompt": "",
+  "role": "",
+  "input": "Assets\\Resources\\Hero\\SkillFireBurst\\raw-sheet.png",
+  "threshold": 40,
+  "edge_threshold": 24,
+  "duration": 80,
+  "rows": 2,
+  "cols": 3,
+  "cell_size": 128,
+  "fit_scale": 0.92,
+  "trim_border": 4,
+  "edge_clean_depth": 2,
+  "align": "center",
+  "shared_scale": true,
+  "component_mode": "all",
+  "component_padding": 10,
+  "min_component_area": 1,
+  "edge_touch_margin": 3,
+  "frame_labels": [
+    "skill-fire-burst-1",
+    "skill-fire-burst-2",
+    "skill-fire-burst-3",
+    "skill-fire-burst-4",
+    "skill-fire-burst-5",
+    "skill-fire-burst-6"
+  ],
+  "frames": [
+    {
+      "grid": [
+        0,
+        0
+      ],
+      "source_box": [
+        0,
+        0,
+        512,
+        512
+      ],
+      "component_mode": "all",
+      "component_count": 7,
+      "selected_component_area": null,
+      "selected_component_bbox": null,
+      "crop_bbox": [
+        179,
+        230,
+        252,
+        308
+      ],
+      "edge_touch": false,
+      "output_size": [
+        21,
+        22
+      ],
+      "paste_position": [
+        53,
+        53
+      ]
+    },
+    {
+      "grid": [
+        0,
+        1
+      ],
+      "source_box": [
+        512,
+        0,
+        1024,
+        512
+      ],
+      "component_mode": "all",
+      "component_count": 6,
+      "selected_component_area": null,
+      "selected_component_bbox": null,
+      "crop_bbox": [
+        112,
+        231,
+        372,
+        316
+      ],
+      "edge_touch": false,
+      "output_size": [
+        75,
+        24
+      ],
+      "paste_position": [
+        26,
+        52
+      ]
+    },
+    {
+      "grid": [
+        0,
+        2
+      ],
+      "source_box": [
+        1024,
+        0,
+        1536,
+        512
+      ],
+      "component_mode": "all",
+      "component_count": 16,
+      "selected_component_area": null,
+      "selected_component_bbox": null,
+      "crop_bbox": [
+        74,
+        183,
+        394,
+        363
+      ],
+      "edge_touch": false,
+      "output_size": [
+        92,
+        51
+      ],
+      "paste_position": [
+        18,
+        38
+      ]
+    },
+    {
+      "grid": [
+        1,
+        0
+      ],
+      "source_box": [
+        0,
+        512,
+        512,
+        1024
+      ],
+      "component_mode": "all",
+      "component_count": 22,
+      "selected_component_area": null,
+      "selected_component_bbox": null,
+      "crop_bbox": [
+        70,
+        68,
+        478,
+        333
+      ],
+      "edge_touch": false,
+      "output_size": [
+        117,
+        76
+      ],
+      "paste_position": [
+        5,
+        26
+      ]
+    },
+    {
+      "grid": [
+        1,
+        1
+      ],
+      "source_box": [
+        512,
+        512,
+        1024,
+        1024
+      ],
+      "component_mode": "all",
+      "component_count": 22,
+      "selected_component_area": null,
+      "selected_component_bbox": null,
+      "crop_bbox": [
+        83,
+        114,
+        460,
+        300
+      ],
+      "edge_touch": false,
+      "output_size": [
+        108,
+        53
+      ],
+      "paste_position": [
+        10,
+        37
+      ]
+    },
+    {
+      "grid": [
+        1,
+        2
+      ],
+      "source_box": [
+        1024,
+        512,
+        1536,
+        1024
+      ],
+      "component_mode": "all",
+      "component_count": 19,
+      "selected_component_area": null,
+      "selected_component_bbox": null,
+      "crop_bbox": [
+        53,
+        119,
+        396,
+        288
+      ],
+      "edge_touch": false,
+      "output_size": [
+        98,
+        48
+      ],
+      "paste_position": [
+        15,
+        40
+      ]
+    }
+  ],
+  "edge_touch_frames": [],
+  "custom_origin_alignment": {
+    "reason": "Keep the palm-flame ignition point stable for hand-position pivot playback.",
+    "target_anchor_pixels_top_left": [
+      28,
+      64
+    ],
+    "unity_sprite_pivot_normalized": [
+      0.21875,
+      0.5
+    ],
+    "origin_pad_pixels_after_left_bbox": 8,
+    "frames": [
+      {
+        "label": "skill-fire-burst-1",
+        "anchor_before": [
+          63,
+          64
+        ],
+        "target_anchor": [
+          28,
+          64
+        ],
+        "shift": [
+          -35,
+          0
+        ]
+      },
+      {
+        "label": "skill-fire-burst-2",
+        "anchor_before": [
+          34,
+          64
+        ],
+        "target_anchor": [
+          28,
+          64
+        ],
+        "shift": [
+          -6,
+          0
+        ]
+      },
+      {
+        "label": "skill-fire-burst-3",
+        "anchor_before": [
+          26,
+          63
+        ],
+        "target_anchor": [
+          28,
+          64
+        ],
+        "shift": [
+          2,
+          1
+        ]
+      },
+      {
+        "label": "skill-fire-burst-4",
+        "anchor_before": [
+          13,
+          64
+        ],
+        "target_anchor": [
+          28,
+          64
+        ],
+        "shift": [
+          15,
+          0
+        ]
+      },
+      {
+        "label": "skill-fire-burst-5",
+        "anchor_before": [
+          18,
+          63
+        ],
+        "target_anchor": [
+          28,
+          64
+        ],
+        "shift": [
+          10,
+          1
+        ]
+      },
+      {
+        "label": "skill-fire-burst-6",
+        "anchor_before": [
+          23,
+          64
+        ],
+        "target_anchor": [
+          28,
+          64
+        ],
+        "shift": [
+          5,
+          0
+        ]
+      }
+    ]
+  }
+}

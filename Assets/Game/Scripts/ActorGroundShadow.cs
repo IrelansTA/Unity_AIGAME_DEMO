@@ -5,8 +5,8 @@ public sealed class ActorGroundShadow : MonoBehaviour
 {
     public CombatActor actor;
     public Vector2 offset = new Vector2(0f, 0.03f);
-    public Vector2 size = new Vector2(1.05f, 0.28f);
-    public Color color = new Color(0f, 0f, 0f, 0.58f);
+    public Vector2 size = new Vector2(1.25f, 0.34f);
+    public Color color = new Color(0f, 0f, 0f, 0.72f);
 
     private const int TextureSize = 64;
     private static Sprite shadowSprite;
@@ -83,7 +83,7 @@ public sealed class ActorGroundShadow : MonoBehaviour
             {
                 float distance01 = Vector2.Distance(new Vector2(x, y), center) / radius;
                 float alpha = Mathf.Clamp01(1f - distance01);
-                alpha = alpha * alpha * 0.85f;
+                alpha = alpha * alpha * 0.95f;
                 texture.SetPixel(x, y, new Color(1f, 1f, 1f, alpha));
             }
         }
