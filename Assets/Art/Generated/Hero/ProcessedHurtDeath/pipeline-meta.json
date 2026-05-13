@@ -1,0 +1,155 @@
+{
+  "target": "player",
+  "mode": "hurt_death_bundle",
+  "prompt": "Crisp pixel-art martial artist hero hurt and defeat poses.",
+  "role": "",
+  "input": "Assets\\Art\\Generated\\Hero\\Raw\\martial_artist_hurt_death_raw.png",
+  "threshold": 12,
+  "edge_threshold": 12,
+  "duration": 200,
+  "rows": 2,
+  "cols": 2,
+  "cell_size": 128,
+  "fit_scale": 0.92,
+  "trim_border": 4,
+  "edge_clean_depth": 3,
+  "align": "feet",
+  "shared_scale": true,
+  "component_mode": "all",
+  "component_padding": 0,
+  "min_component_area": 1,
+  "edge_touch_margin": 0,
+  "frame_labels": [
+    "hero-hurt-1",
+    "hero-hurt-2",
+    "hero-hurt-3",
+    "hero-hurt-4"
+  ],
+  "frames": [
+    {
+      "grid": [
+        0,
+        0
+      ],
+      "source_box": [
+        0,
+        0,
+        627,
+        627
+      ],
+      "component_mode": "all",
+      "component_count": 105,
+      "selected_component_area": null,
+      "selected_component_bbox": null,
+      "crop_bbox": [
+        193,
+        116,
+        514,
+        605
+      ],
+      "edge_touch": false,
+      "output_size": [
+        70,
+        107
+      ],
+      "paste_position": [
+        29,
+        16
+      ]
+    },
+    {
+      "grid": [
+        0,
+        1
+      ],
+      "source_box": [
+        627,
+        0,
+        1254,
+        627
+      ],
+      "component_mode": "all",
+      "component_count": 104,
+      "selected_component_area": null,
+      "selected_component_bbox": null,
+      "crop_bbox": [
+        108,
+        115,
+        479,
+        605
+      ],
+      "edge_touch": false,
+      "output_size": [
+        81,
+        107
+      ],
+      "paste_position": [
+        23,
+        16
+      ]
+    },
+    {
+      "grid": [
+        1,
+        0
+      ],
+      "source_box": [
+        0,
+        627,
+        627,
+        1254
+      ],
+      "component_mode": "all",
+      "component_count": 67,
+      "selected_component_area": null,
+      "selected_component_bbox": null,
+      "crop_bbox": [
+        53,
+        172,
+        574,
+        447
+      ],
+      "edge_touch": false,
+      "output_size": [
+        114,
+        60
+      ],
+      "paste_position": [
+        7,
+        63
+      ]
+    },
+    {
+      "grid": [
+        1,
+        1
+      ],
+      "source_box": [
+        627,
+        627,
+        1254,
+        1254
+      ],
+      "component_mode": "all",
+      "component_count": 50,
+      "selected_component_area": null,
+      "selected_component_bbox": null,
+      "crop_bbox": [
+        63,
+        291,
+        598,
+        445
+      ],
+      "edge_touch": false,
+      "output_size": [
+        117,
+        33
+      ],
+      "paste_position": [
+        5,
+        90
+      ]
+    }
+  ],
+  "edge_touch_frames": []
+}
