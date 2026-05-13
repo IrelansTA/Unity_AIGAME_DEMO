@@ -17,5 +17,6 @@
 - Current scene uses:
   - Hero: `Assets/Art/Generated/Hero/V2Aligned`
   - Enemy: `Assets/Art/Generated/Enemy/V2Aligned`
+- Hero run should not bob vertically. Its runtime run frames `hero-v2-5.png` through `hero-v2-8.png` are aligned by body/head top at `top=83`, not by feet.
 - Enemy art source faces right; scene `sourceFacesRight` should stay `1`.
 - Cross-lane combat should be blocked by Y distance, currently `CombatHitbox.laneTolerance = 0.35`.
