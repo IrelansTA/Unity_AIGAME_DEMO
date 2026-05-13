@@ -11,10 +11,14 @@ public sealed class GameSession : MonoBehaviour
     public Text messageText;
     public Text hintText;
 
+    private CombatHudController combatHud;
+    private ImpactFeedbackController impactFeedback;
     private bool ended;
 
     private void Start()
     {
+        EnsureRuntimePresentation();
+
         if (player != null)
         {
             player.HealthChanged += _ => RefreshHud();
@@ -73,5 +77,67 @@ public sealed class GameSession : MonoBehaviour
         {
             messageText.text = victory ? "VICTORY" : "DEFEAT";
         }
+    }
+
+    private void EnsureRuntimePresentation()
+    {
+        Canvas canvas = ResolveHudCanvas();
+        PlayerCombatController playerController = player == null ? null : player.GetComponent<PlayerCombatController>();
+        CameraFollow2D cameraFollow = ResolveCameraFollow();
+
+        if (combatHud == null)
+        {
+            combatHud = GetComponent<CombatHudController>();
+        }
+
+        if (combatHud == null)
+        {
+            combatHud = gameObject.AddComponent<CombatHudController>();
+        }
+
+        combatHud.Bind(player, enemy, playerController, canvas);
+
+        if (impactFeedback == null)
+        {
+            impactFeedback = GetComponent<ImpactFeedbackController>();
+        }
+
+        if (impactFeedback == null)
+        {
+            impactFeedback = gameObject.AddComponent<ImpactFeedbackController>();
+        }
+
+        impactFeedback.Bind(canvas, cameraFollow);
+    }
+
+    private Canvas ResolveHudCanvas()
+    {
+        if (playerHealthText != null)
+        {
+            return playerHealthText.canvas;
+        }
+
+        if (enemyHealthText != null)
+        {
+            return enemyHealthText.canvas;
+        }
+
+        if (hintText != null)
+        {
+            return hintText.canvas;
+        }
+
+        return FindObjectOfType<Canvas>();
+    }
+
+    private CameraFollow2D ResolveCameraFollow()
+    {
+        Camera mainCamera = Camera.main;
+        if (mainCamera != null && mainCamera.TryGetComponent(out CameraFollow2D cameraFollow))
+        {
+            return cameraFollow;
+        }
+
+        return FindObjectOfType<CameraFollow2D>();
     }
 }

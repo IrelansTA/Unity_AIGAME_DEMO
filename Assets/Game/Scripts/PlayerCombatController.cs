@@ -24,6 +24,13 @@ public sealed class PlayerCombatController : MonoBehaviour
     private float skillCooldownTimer;
     private Vector2 dashDirection;
 
+    public bool IsDashReady => dashCooldownTimer <= 0f;
+    public bool IsSkillReady => skillCooldownTimer <= 0f;
+    public float DashCooldownRemaining => dashCooldownTimer;
+    public float SkillCooldownRemaining => skillCooldownTimer;
+    public float DashCooldownRemaining01 => dashCooldown <= 0f ? 0f : Mathf.Clamp01(dashCooldownTimer / dashCooldown);
+    public float SkillCooldownRemaining01 => skillCooldown <= 0f ? 0f : Mathf.Clamp01(skillCooldownTimer / skillCooldown);
+
     private void Awake()
     {
         if (actor == null)

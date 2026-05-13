@@ -98,8 +98,30 @@ public sealed class CombatHitbox : MonoBehaviour
             if (hurtbox.actor.TakeHit(hit))
             {
                 hitTargets.Add(hurtbox);
+                CombatEvents.RaiseHitConfirmed(new CombatHitEvent(
+                    owner,
+                    hurtbox.actor,
+                    damage,
+                    OverlapCenter(hitRect, hurtbox.WorldRect),
+                    signedKnockback,
+                    hurtbox.actor.IsDead));
             }
         }
+    }
+
+    private static Vector2 OverlapCenter(Rect first, Rect second)
+    {
+        float xMin = Mathf.Max(first.xMin, second.xMin);
+        float xMax = Mathf.Min(first.xMax, second.xMax);
+        float yMin = Mathf.Max(first.yMin, second.yMin);
+        float yMax = Mathf.Min(first.yMax, second.yMax);
+
+        if (xMin <= xMax && yMin <= yMax)
+        {
+            return new Vector2((xMin + xMax) * 0.5f, (yMin + yMax) * 0.5f);
+        }
+
+        return first.center;
     }
 
     private void OnDrawGizmos()
