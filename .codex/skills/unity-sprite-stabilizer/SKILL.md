@@ -18,7 +18,9 @@ Use this skill after generating or replacing Unity 2D character sprites, especia
 - Do not normalize every action to the same bbox height. Running, crouching, hurt, and death naturally have different heights. Scale consistency is about character body scale, not equal bbox height.
 - For tiny idle shimmer, freeze idle frames to one clean standing frame unless a stable generated idle loop already exists.
 - For locomotion, keep four distinct silhouettes. If frames hash differently but look identical, regenerate or choose clearer source poses, then scale the whole pose consistently.
+- If the user asks for a no-bob run cycle, stabilize the head/torso top line for run frames instead of the feet line. In this project the hero run top line is `top=83`; feet may vary naturally while the body stays level.
 - Clear solid magenta and low-alpha magenta edges before final QC. Resizing can reintroduce nearly transparent purple pixels.
+- Do not globally remove near-white pixels when cleaning magenta backgrounds; flood-fill only edge-connected white grid/background pixels, or white shirts/highlights will turn gray/disappear.
 
 ## AIGAME_DEMO Fix Pattern
 
@@ -37,6 +39,7 @@ The repair:
 - Freeze idle frames to a single clean frame for now.
 - Rebuild hero run from clearer run sources, scaling the whole pose to match idle body scale rather than equalizing bbox height.
 - Re-anchor every runtime frame to `192x192`, `anchor_x=95.5`, `ground_bottom=149`.
+- For the hero run specifically, remove vertical bobbing by aligning the run frame body top to `top=83`.
 - Include hurt/death in the same pass.
 - Verify with an audit sheet and bbox/hash table.
 
