@@ -13,6 +13,9 @@ public sealed class GameSession : MonoBehaviour
 
     private CombatHudController combatHud;
     private ImpactFeedbackController impactFeedback;
+    private EnemyWaveDirector waveDirector;
+    private CombatActor subscribedEnemy;
+    private float messageClearTime;
     private bool ended;
 
     private void Start()
@@ -25,12 +28,6 @@ public sealed class GameSession : MonoBehaviour
             player.Died += _ => End(false);
         }
 
-        if (enemy != null)
-        {
-            enemy.HealthChanged += _ => RefreshHud();
-            enemy.Died += _ => End(true);
-        }
-
         if (hintText != null)
         {
             hintText.text = "WASD/Arrow: Move  J: Combo  K: Dash  L: Skill  R: Restart";
@@ -41,6 +38,7 @@ public sealed class GameSession : MonoBehaviour
             messageText.text = "";
         }
 
+        EnsureWaveDirector();
         RefreshHud();
     }
 
@@ -49,6 +47,25 @@ public sealed class GameSession : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.R))
         {
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        }
+
+        if (!ended && messageText != null && messageClearTime > 0f && Time.unscaledTime >= messageClearTime)
+        {
+            messageText.text = "";
+            messageClearTime = 0f;
+        }
+    }
+
+    private void OnDestroy()
+    {
+        SubscribeEnemy(null);
+
+        if (waveDirector != null)
+        {
+            waveDirector.CurrentEnemyChanged -= HandleCurrentEnemyChanged;
+            waveDirector.WaveStarted -= HandleWaveStarted;
+            waveDirector.EnemyRosterChanged -= RefreshHud;
+            waveDirector.AllWavesCleared -= HandleAllWavesCleared;
         }
     }
 
@@ -62,6 +79,10 @@ public sealed class GameSession : MonoBehaviour
         if (enemyHealthText != null && enemy != null)
         {
             enemyHealthText.text = $"ENEMY HP  {enemy.CurrentHealth}/{enemy.maxHealth}";
+        }
+        else if (enemyHealthText != null)
+        {
+            enemyHealthText.text = "ENEMY HP  --/--";
         }
     }
 
@@ -77,6 +98,83 @@ public sealed class GameSession : MonoBehaviour
         {
             messageText.text = victory ? "VICTORY" : "DEFEAT";
         }
+    }
+
+    private void EnsureWaveDirector()
+    {
+        if (player == null || enemy == null)
+        {
+            return;
+        }
+
+        if (waveDirector == null)
+        {
+            waveDirector = GetComponent<EnemyWaveDirector>();
+        }
+
+        if (waveDirector == null)
+        {
+            waveDirector = gameObject.AddComponent<EnemyWaveDirector>();
+        }
+
+        waveDirector.CurrentEnemyChanged += HandleCurrentEnemyChanged;
+        waveDirector.WaveStarted += HandleWaveStarted;
+        waveDirector.EnemyRosterChanged += RefreshHud;
+        waveDirector.AllWavesCleared += HandleAllWavesCleared;
+        waveDirector.Begin(player, enemy);
+    }
+
+    private void HandleCurrentEnemyChanged(CombatActor currentEnemy)
+    {
+        SubscribeEnemy(currentEnemy);
+        enemy = currentEnemy;
+        EnsureRuntimePresentation();
+        RefreshHud();
+    }
+
+    private void SubscribeEnemy(CombatActor currentEnemy)
+    {
+        if (subscribedEnemy == currentEnemy)
+        {
+            return;
+        }
+
+        if (subscribedEnemy != null)
+        {
+            subscribedEnemy.HealthChanged -= HandleEnemyHealthChanged;
+        }
+
+        subscribedEnemy = currentEnemy;
+        if (subscribedEnemy != null)
+        {
+            subscribedEnemy.HealthChanged += HandleEnemyHealthChanged;
+        }
+    }
+
+    private void HandleEnemyHealthChanged(CombatActor actor)
+    {
+        RefreshHud();
+    }
+
+    private void HandleWaveStarted(int wave, int totalWaves)
+    {
+        ShowTransientMessage($"WAVE {wave}/{totalWaves}", 1.2f);
+    }
+
+    private void HandleAllWavesCleared()
+    {
+        End(true);
+    }
+
+    private void ShowTransientMessage(string message, float duration)
+    {
+        if (ended || messageText == null)
+        {
+            return;
+        }
+
+        messageText.text = message;
+        messageClearTime = Time.unscaledTime + duration;
     }
 
     private void EnsureRuntimePresentation()

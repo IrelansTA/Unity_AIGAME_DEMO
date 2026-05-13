@@ -19,3 +19,6 @@
   - Enemy: `Assets/Art/Generated/Enemy/V2Aligned`
 - Enemy art source faces right; scene `sourceFacesRight` should stay `1`.
 - Cross-lane combat should be blocked by Y distance, currently `CombatHitbox.laneTolerance = 0.35`.
+- For long-running Codex tasks, notify completion with a native VS Code notification popup when possible, not a sound-only alert.
+- Combat feedback is runtime-built: `CombatEvents`, `CombatHudController`, `ImpactFeedbackController`, and `CameraFollow2D.AddShake`.
+- `EnemyWaveDirector` keeps scene YAML light by using the existing enemy as wave 1 and a hidden runtime clone as the template for later waves.
