@@ -51,5 +51,6 @@
         "temp/": true,
         "Temp/": true
     },
-    "dotnet.defaultSolution": "AIGAME_DEMO.sln"
+    "dotnet.defaultSolution": "AIGAME_DEMO.sln",
+    "dotnet.preferCSharpExtension": true
 }
