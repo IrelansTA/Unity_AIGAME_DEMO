@@ -5,6 +5,7 @@ public sealed class CombatHitbox : MonoBehaviour
 {
     public CombatActor owner;
     public bool drawDebug = true;
+    public float laneTolerance = 0.35f;
 
     private readonly HashSet<Hurtbox> hitTargets = new HashSet<Hurtbox>();
     private Vector2 offset;
@@ -78,6 +79,11 @@ public sealed class CombatHitbox : MonoBehaviour
             }
 
             if (hitTargets.Contains(hurtbox) || hurtbox.actor.team == owner.team)
+            {
+                continue;
+            }
+
+            if (Mathf.Abs(hurtbox.actor.transform.position.y - owner.transform.position.y) > laneTolerance)
             {
                 continue;
             }

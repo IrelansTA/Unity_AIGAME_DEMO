@@ -1,0 +1,21 @@
+# Project Memory
+
+- User wants a DNF-like 2D side-scrolling beat-em-up vertical slice.
+- Keep development incremental; user will refine design step by step.
+- Do not add Unity Input System unless explicitly requested.
+- Combat is custom rectangle hitbox logic, not physics-driven Rigidbody combat.
+- X is horizontal movement, Y is lane/depth movement.
+- Y also controls sprite sorting through `LaneSorter`.
+- Runtime actor sprites must preserve `.meta` GUIDs unless rebinding scene references intentionally.
+- For current generated actor sprites, stable frame convention is `192x192`, center around `95.5`, ground bottom `149`, PPU `64`.
+- Previous sprite mistakes:
+  - Equal canvas size alone did not solve scale mismatch because raw character bbox sizes differed.
+  - Scaling run frames to the same bbox height as idle made run visually too large.
+  - Generated idle variants caused shimmer.
+  - Hurt/death must be included in the same normalization pass, not left as old frames.
+  - Tiny magenta low-alpha pixels can remain after resizing and should be scrubbed.
+- Current scene uses:
+  - Hero: `Assets/Art/Generated/Hero/V2Aligned`
+  - Enemy: `Assets/Art/Generated/Enemy/V2Aligned`
+- Enemy art source faces right; scene `sourceFacesRight` should stay `1`.
+- Cross-lane combat should be blocked by Y distance, currently `CombatHitbox.laneTolerance = 0.35`.

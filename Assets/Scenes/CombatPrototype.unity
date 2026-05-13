@@ -868,7 +868,7 @@ MonoBehaviour:
   visual: {fileID: 1564011633}
   target: {fileID: 1546658901}
   attackRangeX: 1.15
-  laneTolerance: 0.55
+  laneTolerance: 0.32
   attackCooldown: 1.1
 --- !u!114 &1564011633
 MonoBehaviour:
@@ -884,7 +884,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   spriteRenderer: {fileID: 1959333713}
   actor: {fileID: 1564011636}
-  sourceFacesRight: 0
+  sourceFacesRight: 1
   framesPerSecond: 8
   idle:
   - {fileID: 21300000, guid: 57ff980a824dc8d4dad7e15dbbe95209, type: 3}

@@ -8,7 +8,7 @@ public sealed class EnemyCombatController : MonoBehaviour
     public CombatActor target;
 
     public float attackRangeX = 1.15f;
-    public float laneTolerance = 0.55f;
+    public float laneTolerance = 0.32f;
     public float attackCooldown = 1.1f;
 
     private float cooldownTimer;

@@ -51,5 +51,5 @@
         "temp/": true,
         "Temp/": true
     },
-    "dotnet.defaultSolution": "AI3DGAME_DEMO.sln"
+    "dotnet.defaultSolution": "AIGAME_DEMO.sln"
 }
