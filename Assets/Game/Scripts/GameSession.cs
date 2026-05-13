@@ -13,6 +13,7 @@ public sealed class GameSession : MonoBehaviour
 
     private CombatHudController combatHud;
     private ImpactFeedbackController impactFeedback;
+    private GmToolController gmTool;
     private EnemyWaveDirector waveDirector;
     private CombatActor subscribedEnemy;
     private float messageClearTime;
@@ -64,6 +65,8 @@ public sealed class GameSession : MonoBehaviour
         {
             waveDirector.CurrentEnemyChanged -= HandleCurrentEnemyChanged;
             waveDirector.WaveStarted -= HandleWaveStarted;
+            waveDirector.BossWarningStarted -= HandleBossWarningStarted;
+            waveDirector.BossStarted -= HandleBossStarted;
             waveDirector.EnemyRosterChanged -= RefreshHud;
             waveDirector.AllWavesCleared -= HandleAllWavesCleared;
         }
@@ -78,7 +81,8 @@ public sealed class GameSession : MonoBehaviour
 
         if (enemyHealthText != null && enemy != null)
         {
-            enemyHealthText.text = $"ENEMY HP  {enemy.CurrentHealth}/{enemy.maxHealth}";
+            string label = enemy.GetComponent<BossCombatController>() == null ? "ENEMY HP" : "BOSS HP";
+            enemyHealthText.text = $"{label}  {enemy.CurrentHealth}/{enemy.maxHealth}";
         }
         else if (enemyHealthText != null)
         {
@@ -119,6 +123,8 @@ public sealed class GameSession : MonoBehaviour
 
         waveDirector.CurrentEnemyChanged += HandleCurrentEnemyChanged;
         waveDirector.WaveStarted += HandleWaveStarted;
+        waveDirector.BossWarningStarted += HandleBossWarningStarted;
+        waveDirector.BossStarted += HandleBossStarted;
         waveDirector.EnemyRosterChanged += RefreshHud;
         waveDirector.AllWavesCleared += HandleAllWavesCleared;
         waveDirector.Begin(player, enemy);
@@ -159,6 +165,16 @@ public sealed class GameSession : MonoBehaviour
     private void HandleWaveStarted(int wave, int totalWaves)
     {
         ShowTransientMessage($"WAVE {wave}/{totalWaves}", 1.2f);
+    }
+
+    private void HandleBossWarningStarted()
+    {
+        ShowTransientMessage("WARNING", 1.55f);
+    }
+
+    private void HandleBossStarted(CombatActor boss)
+    {
+        ShowTransientMessage("BOSS", 1.2f);
     }
 
     private void HandleAllWavesCleared()
@@ -206,6 +222,18 @@ public sealed class GameSession : MonoBehaviour
         }
 
         impactFeedback.Bind(canvas, cameraFollow);
+
+        if (gmTool == null)
+        {
+            gmTool = GetComponent<GmToolController>();
+        }
+
+        if (gmTool == null)
+        {
+            gmTool = gameObject.AddComponent<GmToolController>();
+        }
+
+        gmTool.Bind(player, canvas, waveDirector);
     }
 
     private Canvas ResolveHudCanvas()

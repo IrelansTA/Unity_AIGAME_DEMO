@@ -6,6 +6,7 @@ public sealed class CombatActor : MonoBehaviour
     public CombatTeam team;
     public int maxHealth = 100;
     public float moveSpeed = 4f;
+    public bool invincible;
     public CombatBounds bounds;
     public Hurtbox hurtbox;
     public ActorVisualAnimator visual;
@@ -18,6 +19,7 @@ public sealed class CombatActor : MonoBehaviour
     public int Facing { get; private set; } = 1;
     public bool IsDead { get; private set; }
     public bool IsStunned => stunTimer > 0f || knockbackTimer > 0f;
+    public bool IsInvincible => invincible;
     public float Health01 => maxHealth <= 0 ? 0f : (float)CurrentHealth / maxHealth;
 
     private float stunTimer;
@@ -43,6 +45,8 @@ public sealed class CombatActor : MonoBehaviour
         {
             hurtbox.actor = this;
         }
+
+        EnsureGroundShadow();
     }
 
     private void Update()
@@ -111,9 +115,61 @@ public sealed class CombatActor : MonoBehaviour
         invulnerabilityTimer = Mathf.Max(invulnerabilityTimer, duration);
     }
 
+    public void ConfigureStats(int maxHealth, float moveSpeed, bool restoreHealth = true)
+    {
+        this.maxHealth = Mathf.Max(1, maxHealth);
+        this.moveSpeed = Mathf.Max(0f, moveSpeed);
+
+        if (!restoreHealth)
+        {
+            return;
+        }
+
+        CurrentHealth = this.maxHealth;
+        IsDead = false;
+        stunTimer = 0f;
+        invulnerabilityTimer = 0f;
+        knockbackTimer = 0f;
+        knockbackVelocity = Vector2.zero;
+        HealthChanged?.Invoke(this);
+    }
+
+    public void RestoreToFullHealth()
+    {
+        if (IsDead)
+        {
+            return;
+        }
+
+        CurrentHealth = maxHealth;
+        stunTimer = 0f;
+        invulnerabilityTimer = 0f;
+        knockbackTimer = 0f;
+        knockbackVelocity = Vector2.zero;
+        HealthChanged?.Invoke(this);
+    }
+
+    public void ForceDefeat()
+    {
+        if (IsDead)
+        {
+            return;
+        }
+
+        CurrentHealth = 0;
+        IsDead = true;
+        stunTimer = 0f;
+        invulnerabilityTimer = 0f;
+        knockbackTimer = 0f;
+        knockbackVelocity = Vector2.zero;
+        HealthChanged?.Invoke(this);
+        visual?.PlayDeath();
+        Died?.Invoke(this);
+    }
+
     public bool TakeHit(HitData hit)
     {
-        if (IsDead || invulnerabilityTimer > 0f || hit.sourceTeam == team)
+        if (IsDead || invincible || invulnerabilityTimer > 0f || hit.sourceTeam == team)
         {
             return false;
         }
@@ -145,5 +201,13 @@ public sealed class CombatActor : MonoBehaviour
         }
 
         return true;
+    }
+
+    private void EnsureGroundShadow()
+    {
+        if (GetComponent<ActorGroundShadow>() == null)
+        {
+            gameObject.AddComponent<ActorGroundShadow>();
+        }
     }
 }

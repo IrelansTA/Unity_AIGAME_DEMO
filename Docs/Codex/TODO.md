@@ -2,6 +2,20 @@
 
 ## Completed Recently
 
+- Hammer General Boss first pass:
+  - Generated real pixel-art Boss frames under `Assets/Resources/Boss/HammerGeneral`.
+  - Added `BossCombatController`, `BossHammerProjectile`, and `HammerGeneralAssets`.
+  - After the 3 small enemy waves, the director now shows `WARNING`, spawns `Boss_HammerGeneral`, and delays victory until Boss death.
+  - Boss has 260 HP, larger hurtbox, Boss HUD label, hammer slam, charge rush with red lane warning, and boomerang hammer projectile.
+  - Lowered the boomerang hammer projectile spawn height from `0.50` to `0.34` so it leaves closer to the Boss hand instead of floating high.
+  - Reprocessed Boss and projectile sprites from the raw magenta sheets with stronger despill/edge cleanup.
+  - Throw frames 19/20 now reuse the empty-hand release pose so the Boss does not visibly hold a hammer while the projectile is out.
+- Runtime presentation/GM first pass:
+  - Every `CombatActor` now gets a small semi-transparent oval ground shadow at runtime.
+  - Added Tab-toggled Chinese IMGUI GM display through `GmToolController`; it does not create Canvas UI controls.
+  - GM settings serialize to `Application.persistentDataPath/gm-tool-settings.json`.
+  - First GM option: player invincibility.
+  - Added GM playtest buttons for restore player HP, defeat current enemy, and jump directly to the Hammer General Boss.
 - Combat HUD and impact feedback first pass:
   - Runtime player/enemy health bars, delayed damage bars, combo text, Dash/Skill cooldown widgets.
   - Combat hit event channel, hit sparks, floating damage, hitstop, screen flash, and camera shake.
@@ -12,40 +26,43 @@
 
 ## Immediate Verification
 
-- Run Unity compile validation after the editor refreshes assets.
-- Enter Play Mode in `CombatPrototype`.
-- Verify wave 1 starts with the scene enemy and waves 2/3 spawn after all active enemies die.
-- Verify HUD enemy health switches to the enemy being hit.
-- Verify victory only appears after the final wave is cleared.
-- Verify attacks only hit when actors are within the same lane tolerance.
+- Unity compile validation after asset refresh: no new `Error`, `Exception`, or `Assert` observed.
+- Boss asset/import validation: 24 Boss frames and 4 projectile frames load from `Resources`, PPU `64`, point filter.
+- MCP manual validation: runtime Boss clone configures to `260/260` HP with `BossCombatController`, Boss sprites, and projectile sprites.
+- Runtime probe validation:
+  - Player and active enemy receive `ActorGroundShadow`.
+  - `GmToolController` is attached by `GameSession`.
+  - With GM invincibility enabled, a 999-damage enemy hit is rejected and player HP stays `120/120`.
+- Compile smoke after GM playtest tools:
+  - `AssetDatabase.Refresh()` completed.
+  - Dynamic compile probe reached `CombatActor.RestoreToFullHealth()` successfully.
+- Boss hammer height validation:
+  - Isolated screenshot of `BossProjectileHeightPreview` confirmed the hammer now aligns near the throw hand.
+  - Post-fix probe loaded Boss/projectile sprites and confirmed `projectileLocalY=0.34`.
+- Still needs hands-on Play Mode pass in `CombatPrototype`:
+  - Verify wave 1 starts with the scene enemy and waves 2/3 spawn after all active enemies die.
+  - Verify `WARNING` / `BOSS` timing feels good.
+  - Verify HUD enemy health switches to the enemy being hit and shows `BOSS HP` for the Boss.
+  - Verify victory only appears after the Boss is dead.
+  - Verify attacks only hit when actors are within the same lane tolerance.
 
-## Next Priority: Hammer General Boss
+## Next Priority: Boss Playtest And Tuning
 
-Status: deferred until real image generation is available. Do not ship this Boss using the ordinary enemy appearance or code-drawn placeholder art.
+Status: first pass implemented with generated art. Next work is tuning, animation cleanup, and a real hands-on combat pass.
 
-- Generate Hammer General Boss sprite art:
-  - Use `$imagegen` / `generate2dsprite` once the built-in `image_gen` tool or a valid CLI fallback API key is available.
-  - Target a pixel-art side-view hammer general sprite sheet under `Assets/Resources/Boss/HammerGeneral`.
-  - Desired delivery is 24 frames, 4 columns x 6 rows: idle, walk, slam, charge, throw, hurt/death.
-  - Normalize to `256x256`, PPU `64`, point filter, stable feet line, and about `1.35x` normal enemy size.
-- Add Boss phase to the existing wave flow:
-  - After the 3 small enemy waves are cleared, wait about `1.8s`, show `WARNING` / `BOSS`, then spawn `Boss_HammerGeneral`.
-  - Clone the runtime enemy template for the Boss and replace sprites, AI, stats, hurtbox, and combat controller at runtime.
-  - Move victory from "small waves cleared" to "Boss dead".
-- Implement Boss gameplay:
-  - Add `BossCombatController` with about `260` HP, `2.4` move speed, short hurt stun, and readable attack selection.
-  - Skill 1: charged hammer slam, `0.85s` windup, lane-aware heavy hit around `18` damage, strong shake.
-  - Skill 2: charge rush, `0.65s` red lane warning, straight-line dash, about `14` damage.
-  - Skill 3: boomerang hammer via `BossHammerProjectile`, `0.45s` windup, travels about `3.2` units and returns, about `12` damage.
-- Reuse existing feedback systems:
-  - Broadcast hits through `CombatEvents`.
-  - Reuse `ImpactFeedbackController`, floating damage, hitstop, camera shake, and screen flash.
-  - Bind the current enemy HUD to Boss health and show `BOSS HP current/max`.
-- Boss acceptance checks:
-  - Unity compile has no new `Error`, `Exception`, or `Assert`.
-  - Clearing waves 1-3 spawns the Boss and does not trigger early victory.
-  - All three Boss skills can happen and respect lane checks.
-  - Boss death triggers `VICTORY` without breaking existing death/feedback flow.
+- Use the Tab GM panel to accelerate the pass:
+  - Toggle player invincibility when observing Boss attacks.
+  - Use "击败当前敌人" to advance waves quickly.
+  - Use "直接召唤Boss" to jump straight into Boss tuning.
+- Play the full wave sequence at normal speed and tune:
+  - Boss movement speed, decision cooldown, and skill rotation readability.
+  - Slam/charge/throw hitbox offsets and lane tolerance.
+  - Charge warning length/opacity and spawn timing.
+  - Boss HP/time-to-kill relative to the current player combo and skill damage.
+- Clean up Boss animation frames if needed:
+  - Check the reprocessed Boss edges in Game View against the training hall floor.
+  - If the throw still reads oddly, generate dedicated no-hammer throw body frames rather than reusing the empty-hand release pose.
+- Consider adding a dedicated Boss intro flash or screen shake once pacing feels right.
 
 ## Next Gameplay Work
 

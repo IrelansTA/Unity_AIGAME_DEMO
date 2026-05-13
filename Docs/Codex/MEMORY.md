@@ -23,3 +23,19 @@
 - For long-running Codex tasks, notify completion with a native VS Code notification popup when possible, not a sound-only alert.
 - Combat feedback is runtime-built: `CombatEvents`, `CombatHudController`, `ImpactFeedbackController`, and `CameraFollow2D.AddShake`.
 - `EnemyWaveDirector` keeps scene YAML light by using the existing enemy as wave 1 and a hidden runtime clone as the template for later waves.
+- Hammer General Boss first pass is runtime-built after the 3 small waves:
+  - Generated Boss resources live under `Assets/Resources/Boss/HammerGeneral`.
+  - Runtime code loads sprites through `HammerGeneralAssets`.
+  - `EnemyWaveDirector` clones the enemy template, disables `EnemyCombatController`, applies Boss sprites/stats/hurtbox, adds `BossCombatController`, and only sends victory after Boss death.
+  - `BossHammerProjectile` broadcasts hits through `CombatEvents` so existing hit sparks, damage numbers, hitstop, flash, and camera shake still work.
+  - Boss thrown hammer height is tuned through `BossCombatController.projectileLocalY`; current value is `0.34` after screenshot validation against throw frame 19.
+  - Boss sprites were reprocessed from raw magenta sheets with despill/edge cleanup after purple fringes showed up in Game View.
+  - Throw frames 19/20 intentionally reuse the empty-hand release pose so the Boss does not hold a hammer while the projectile exists.
+- Runtime GM:
+  - `GameSession` adds `GmToolController`; press Tab to show/hide it.
+  - GM display uses simple Chinese IMGUI text/toggle, not Canvas UI objects.
+  - GM settings serialize to `Application.persistentDataPath/gm-tool-settings.json`.
+  - First GM option is player invincibility via `CombatActor.invincible`.
+  - GM now also has playtest buttons: restore player HP, defeat current enemy, and directly summon the Hammer General Boss.
+  - `EnemyWaveDirector.DebugSkipToBoss()` destroys active small enemies, keeps the runtime template, sets the wave to the final wave, and spawns `Boss_HammerGeneral` immediately.
+- `CombatActor` automatically adds `ActorGroundShadow`, so hero, enemies, and runtime clones all get small oval foot shadows without scene YAML edits.

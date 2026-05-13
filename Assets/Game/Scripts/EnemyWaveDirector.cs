@@ -9,6 +9,8 @@ public sealed class EnemyWaveDirector : MonoBehaviour
     public CombatActor initialEnemy;
     public float nextWaveDelay = 1.15f;
     public float corpseCleanupDelay = 1.35f;
+    public float bossIntroDelay = 1.8f;
+    public Vector2 bossSpawnOffset = new Vector2(1.05f, 0f);
 
     private static readonly Vector2[][] AdditionalWaves =
     {
@@ -27,16 +29,20 @@ public sealed class EnemyWaveDirector : MonoBehaviour
 
     private readonly List<CombatActor> activeEnemies = new List<CombatActor>();
     private CombatActor currentEnemy;
+    private CombatActor bossActor;
     private GameObject enemyTemplate;
     private Transform enemyParent;
     private CombatBounds bounds;
     private Vector3 firstSpawnPosition;
     private bool started;
     private bool waitingForNextWave;
+    private bool bossSpawned;
     private bool completed;
 
     public event Action<CombatActor> CurrentEnemyChanged;
     public event Action<int, int> WaveStarted;
+    public event Action BossWarningStarted;
+    public event Action<CombatActor> BossStarted;
     public event Action EnemyRosterChanged;
     public event Action AllWavesCleared;
 
@@ -44,6 +50,8 @@ public sealed class EnemyWaveDirector : MonoBehaviour
     public int CurrentWave { get; private set; }
     public int TotalWaves => 1 + AdditionalWaves.Length;
     public int AliveEnemyCount => CountAliveEnemies();
+    public bool BossSpawned => bossSpawned;
+    public CombatActor BossActor => bossActor;
 
     public void Begin(CombatActor playerActor, CombatActor firstEnemy)
     {
@@ -149,7 +157,14 @@ public sealed class EnemyWaveDirector : MonoBehaviour
         {
             if (CurrentWave >= TotalWaves)
             {
-                StartCoroutine(CompleteAfterDelay());
+                if (bossSpawned)
+                {
+                    StartCoroutine(CompleteAfterDelay());
+                }
+                else
+                {
+                    StartCoroutine(SpawnBossAfterDelay());
+                }
             }
             else
             {
@@ -188,6 +203,25 @@ public sealed class EnemyWaveDirector : MonoBehaviour
         SpawnWave(CurrentWave);
         waitingForNextWave = false;
         WaveStarted?.Invoke(CurrentWave, TotalWaves);
+        EnemyRosterChanged?.Invoke();
+    }
+
+    private IEnumerator SpawnBossAfterDelay()
+    {
+        waitingForNextWave = true;
+        SetCurrentEnemy(null);
+        BossWarningStarted?.Invoke();
+
+        yield return new WaitForSeconds(Mathf.Max(0f, bossIntroDelay));
+
+        if (completed || player == null || player.IsDead)
+        {
+            waitingForNextWave = false;
+            yield break;
+        }
+
+        SpawnBoss();
+        waitingForNextWave = false;
         EnemyRosterChanged?.Invoke();
     }
 
@@ -232,6 +266,125 @@ public sealed class EnemyWaveDirector : MonoBehaviour
         }
 
         SetCurrentEnemy(FindClosestAliveEnemy());
+    }
+
+    private void SpawnBoss()
+    {
+        GameObject instance = Instantiate(enemyTemplate, enemyParent);
+        instance.name = "Boss_HammerGeneral";
+        instance.SetActive(true);
+
+        CombatActor actor = instance.GetComponent<CombatActor>();
+        if (actor == null)
+        {
+            Destroy(instance);
+            return;
+        }
+
+        Vector3 spawnPosition = firstSpawnPosition + (Vector3)bossSpawnOffset;
+        ConfigureEnemy(actor, spawnPosition, instance.name);
+        ConfigureBoss(actor);
+        bossActor = actor;
+        bossSpawned = true;
+        activeEnemies.Add(actor);
+        SetCurrentEnemy(actor);
+        BossStarted?.Invoke(actor);
+    }
+
+    public void DebugDefeatCurrentEnemy()
+    {
+        CombatActor enemy = currentEnemy != null && !currentEnemy.IsDead
+            ? currentEnemy
+            : FindClosestAliveEnemy();
+
+        enemy?.ForceDefeat();
+    }
+
+    public void DebugSkipToBoss()
+    {
+        if (!started || completed || player == null || player.IsDead)
+        {
+            return;
+        }
+
+        if (bossSpawned)
+        {
+            SetCurrentEnemy(bossActor);
+            return;
+        }
+
+        StopAllCoroutines();
+        waitingForNextWave = false;
+
+        for (int i = activeEnemies.Count - 1; i >= 0; i--)
+        {
+            CombatActor enemy = activeEnemies[i];
+            if (enemy == null)
+            {
+                activeEnemies.RemoveAt(i);
+                continue;
+            }
+
+            enemy.Died -= HandleEnemyDied;
+            Destroy(enemy.gameObject);
+            activeEnemies.RemoveAt(i);
+        }
+
+        CurrentWave = TotalWaves;
+        SetCurrentEnemy(null);
+        BossWarningStarted?.Invoke();
+        SpawnBoss();
+        EnemyRosterChanged?.Invoke();
+    }
+
+    private void ConfigureBoss(CombatActor actor)
+    {
+        actor.ConfigureStats(260, 2.4f);
+
+        if (actor.hurtbox != null)
+        {
+            actor.hurtbox.offset = new Vector2(0f, 0.82f);
+            actor.hurtbox.size = new Vector2(1.18f, 1.72f);
+        }
+
+        if (actor.TryGetComponent(out ActorGroundShadow shadow))
+        {
+            shadow.size = new Vector2(1.55f, 0.36f);
+            shadow.offset = new Vector2(0f, 0.03f);
+            shadow.color = new Color(0f, 0f, 0f, 0.6f);
+        }
+
+        if (actor.TryGetComponent(out EnemyCombatController enemyController))
+        {
+            enemyController.enabled = false;
+        }
+
+        if (actor.TryGetComponent(out CombatHitbox combatHitbox))
+        {
+            combatHitbox.laneTolerance = 0.35f;
+        }
+
+        ActorVisualAnimator visual = actor.visual != null ? actor.visual : actor.GetComponent<ActorVisualAnimator>();
+        HammerGeneralAssets.ApplyTo(visual);
+        visual?.PlayIdle();
+
+        BossCombatController bossController = actor.GetComponent<BossCombatController>();
+        if (bossController == null)
+        {
+            bossController = actor.gameObject.AddComponent<BossCombatController>();
+        }
+
+        bossController.actor = actor;
+        bossController.hitbox = combatHitbox;
+        bossController.visual = visual;
+        bossController.target = player;
+        bossController.laneTolerance = 0.35f;
+        bossController.warningHeight = 0.08f;
+        bossController.warningLocalY = 0.12f;
+        bossController.projectileLocalY = 0.34f;
+        bossController.slamWindup = 1.15f;
+        bossController.slamWarningLocalY = 0.06f;
+        bossController.slamWarningSize = new Vector2(2.05f, 0.48f);
     }
 
     private CombatActor FindClosestAliveEnemy()
